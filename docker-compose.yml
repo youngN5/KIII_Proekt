@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+
+  app:
+    image: employeeapp:latest
+
+    container_name: employeeapp-container
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/db-kiii
+    ports:
+      - 9092:9092
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    container_name: db-kiii-container
+    environment:
+      - POSTGRES_USER=mladen1
+      - POSTGRES_PASSWORD=mladen123
+      - POSTGRES_DB=db-kiii
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
+
