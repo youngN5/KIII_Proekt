@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: employeeapp-deployment
+  namespace: employeeapp
+  labels:
+    app: employeeapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: employeeapp
+  template:
+    metadata:
+      labels:
+        app: employeeapp
+    spec:
+      containers:
+        - name: employeeapp
+          image: youngn555/employeeapp:latest
+          command: ["java", "-jar", "g1-0.0.1-SNAPSHOT.jar"]
+          ports:
+            - containerPort: 9092
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+            - name: SPRING_CONFIG_LOCATION
+              value: /config/application.properties
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+              subPath: application.properties
+      volumes:
+        - name: config-volume
+          configMap:
+            name: employeeapp-configmap
+            items:
+              - key: application.properties
+                path: application.properties
